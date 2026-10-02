@@ -26,3 +26,23 @@ checkStringLength('проверяемая строка', 10);
 isPalindrome('топот');
 isPalindrome('ДовОд');
 isPalindrome('Кекс');
+
+const getMinutesFromTime = (time) => {
+  const [hours, minutes] = time.split(':');
+  return Number(hours) * 60 + Number(minutes);
+};
+
+const checkMeeting = (startWorkDay, endWorkDay, startMeeting, duration) => {
+  const startWorkMinutes = getMinutesFromTime(startWorkDay);
+  const endWorkMinutes = getMinutesFromTime(endWorkDay);
+  const startMeetingMinutes = getMinutesFromTime(startMeeting);
+  const endMeetingMinutes = startMeetingMinutes + duration;
+
+  return startMeetingMinutes >= startWorkMinutes && endMeetingMinutes <= endWorkMinutes;
+};
+
+checkMeeting('08:00', '17:30', '14:00', 90);
+checkMeeting('8:0', '10:0', '8:0', 120);
+checkMeeting('08:00', '14:30', '14:00', 90);
+checkMeeting('14:00', '17:30', '08:0', 90);
+checkMeeting('8:00', '17:30', '08:00', 900);
