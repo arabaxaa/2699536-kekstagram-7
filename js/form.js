@@ -1,4 +1,5 @@
 import { resetEffects } from './effects.js';
+import { sendData } from './api.js';
 
 const uploadForm = document.querySelector('.img-upload__form');
 const uploadInput = document.querySelector('.img-upload__input');
@@ -66,7 +67,7 @@ pristine.addValidator(
 const openForm = () => {
   uploadOverlay.classList.remove('hidden');
   body.classList.add('modal-open');
-  resetEffects(); // <-- Добавлено
+  resetEffects();
   document.addEventListener('keydown', onEscapePress);
 };
 
@@ -101,11 +102,84 @@ uploadForm.addEventListener('keydown', (evt) => {
   }
 });
 
+const submitButton = uploadForm.querySelector('.img-upload__submit');
+
+function onSuccessEsc(e) {
+  if (e.key === 'Escape') {
+    onSuccessClose();
+  }
+}
+
+function onSuccessClick(e) {
+  if (!e.target.closest('.success')) {
+    onSuccessClose();
+  }
+}
+
+function onSuccessClose() {
+  const successElement = document.querySelector('.success');
+  if (successElement) {
+    successElement.remove();
+  }
+  document.removeEventListener('keydown', onSuccessEsc);
+  document.removeEventListener('click', onSuccessClick);
+}
+
+function onErrorEsc(e) {
+  if (e.key === 'Escape') {
+    onErrorClose();
+  }
+}
+
+function onErrorClick(e) {
+  if (!e.target.closest('.error')) {
+    onErrorClose();
+  }
+}
+
+function onErrorClose() {
+  const errorElement = document.querySelector('.error');
+  if (errorElement) {
+    errorElement.remove();
+  }
+  document.removeEventListener('keydown', onErrorEsc);
+  document.removeEventListener('click', onErrorClick);
+}
+
 uploadForm.addEventListener('submit', (evt) => {
+  evt.preventDefault();
+
   const isValid = pristine.validate();
 
-  if (!isValid) {
-    evt.preventDefault();
+  if (isValid) {
+    submitButton.disabled = true;
+
+    const formData = new FormData(uploadForm);
+
+    sendData(formData)
+      .then(() => {
+        closeForm();
+
+        const successTemplate = document.querySelector('#success').content.cloneNode(true);
+        const successElement = successTemplate.firstElementChild;
+        document.body.appendChild(successElement);
+
+        successElement.querySelector('.success__button').addEventListener('click', onSuccessClose);
+        document.addEventListener('keydown', onSuccessEsc);
+        document.addEventListener('click', onSuccessClick);
+      })
+      .catch(() => {
+        const errorTemplate = document.querySelector('#error').content.cloneNode(true);
+        const errorElement = errorTemplate.firstElementChild;
+        document.body.appendChild(errorElement);
+
+        errorElement.querySelector('.error__button').addEventListener('click', onErrorClose);
+        document.addEventListener('keydown', onErrorEsc);
+        document.addEventListener('click', onErrorClick);
+      })
+      .finally(() => {
+        submitButton.disabled = false;
+      });
   }
 });
 
