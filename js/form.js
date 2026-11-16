@@ -1,3 +1,5 @@
+import { resetEffects } from './effects.js';
+
 const uploadForm = document.querySelector('.img-upload__form');
 const uploadInput = document.querySelector('.img-upload__input');
 const uploadOverlay = document.querySelector('.img-upload__overlay');
@@ -47,7 +49,7 @@ const validateHashtags = (value) => {
   return true;
 };
 
-const validateDescription = (value) =>  value.length <= 140;
+const validateDescription = (value) => value.length <= 140;
 
 pristine.addValidator(
   hashtagsInput,
@@ -64,18 +66,17 @@ pristine.addValidator(
 const openForm = () => {
   uploadOverlay.classList.remove('hidden');
   body.classList.add('modal-open');
-
+  resetEffects(); // <-- Добавлено
   document.addEventListener('keydown', onEscapePress);
 };
 
 const closeForm = () => {
   uploadOverlay.classList.add('hidden');
   body.classList.remove('modal-open');
-
+  resetEffects();
   uploadForm.reset();
   uploadInput.value = '';
   pristine.reset();
-
   document.removeEventListener('keydown', onEscapePress);
 };
 
