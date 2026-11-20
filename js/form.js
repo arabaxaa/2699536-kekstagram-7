@@ -7,6 +7,8 @@ const uploadOverlay = document.querySelector('.img-upload__overlay');
 const cancelButton = document.querySelector('.img-upload__cancel');
 const body = document.body;
 
+const previewImage = uploadForm.querySelector('.img-upload__preview img');
+
 const hashtagsInput = uploadForm.querySelector('.text__hashtags');
 const descriptionInput = uploadForm.querySelector('.text__description');
 
@@ -68,6 +70,16 @@ const openForm = () => {
   uploadOverlay.classList.remove('hidden');
   body.classList.add('modal-open');
   resetEffects();
+
+  const file = uploadInput.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      previewImage.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+
   document.addEventListener('keydown', onEscapePress);
 };
 
@@ -78,6 +90,9 @@ const closeForm = () => {
   uploadForm.reset();
   uploadInput.value = '';
   pristine.reset();
+
+  previewImage.src = 'img/upload-default-image.jpg';
+
   document.removeEventListener('keydown', onEscapePress);
 };
 
