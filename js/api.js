@@ -1,6 +1,6 @@
-const BASE_URL = 'https://29.javascript.htmlacademy.pro/kekstagram';
+const BASE_URL = 'https://32.javascript.htmlacademy.pro/kekstagram/';
 
-const getData = () => fetch(`${BASE_URL}/data`)
+const getData = () => fetch(`${BASE_URL}data`)
   .then((response) => {
     if (!response.ok) {
       throw new Error('Ошибка загрузки данных');

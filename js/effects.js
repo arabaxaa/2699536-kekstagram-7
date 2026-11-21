@@ -70,6 +70,14 @@ const updateSliderOptions = (effectName) => {
   });
 
   effectSlider.noUiSlider.set(effect.max);
+
+  if (effectName === 'marvin') {
+    previewImage.style.filter = `invert(${effect.max}%)`;
+  } else if (effectName === 'phobos') {
+    previewImage.style.filter = `blur(${effect.max}px)`;
+  } else {
+    previewImage.style.filter = `${effect.filter}(${effect.max}${effect.unit})`;
+  }
 };
 
 effectSlider.noUiSlider.on('update', (values, handle) => {
@@ -80,7 +88,7 @@ effectSlider.noUiSlider.on('update', (values, handle) => {
     return;
   }
 
-  effectValue.value = value;
+  effectValue.value = parseFloat(value);
 
   if (currentEffect === 'marvin') {
     previewImage.style.filter = `invert(${value}%)`;

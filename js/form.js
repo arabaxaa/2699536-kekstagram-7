@@ -8,6 +8,7 @@ const cancelButton = document.querySelector('.img-upload__cancel');
 const body = document.body;
 
 const previewImage = uploadForm.querySelector('.img-upload__preview img');
+const effectsPreviews = uploadForm.querySelectorAll('.effects__preview');
 
 const hashtagsInput = uploadForm.querySelector('.text__hashtags');
 const descriptionInput = uploadForm.querySelector('.text__description');
@@ -73,11 +74,12 @@ const openForm = () => {
 
   const file = uploadInput.files[0];
   if (file) {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      previewImage.src = e.target.result;
-    };
-    reader.readAsDataURL(file);
+    const imageUrl = URL.createObjectURL(file);
+    previewImage.src = imageUrl;
+
+    effectsPreviews.forEach((preview) => {
+      preview.style.backgroundImage = `url(${imageUrl})`;
+    });
   }
 
   document.addEventListener('keydown', onEscapePress);
@@ -93,11 +95,27 @@ const closeForm = () => {
 
   previewImage.src = 'img/upload-default-image.jpg';
 
+  effectsPreviews.forEach((preview) => {
+    preview.style.backgroundImage = '';
+  });
+
   document.removeEventListener('keydown', onEscapePress);
 };
 
 function onEscapePress(evt) {
   if (evt.key === 'Escape') {
+    const errorModal = document.querySelector('.error');
+    if (errorModal) {
+      return;
+    }
+
+    const hasErrors = uploadForm.querySelector('.pristine-error');
+
+    if (uploadForm.contains(document.activeElement) && !hasErrors) {
+      evt.stopPropagation();
+      return;
+    }
+
     evt.preventDefault();
     closeForm();
   }
@@ -113,7 +131,7 @@ cancelButton.addEventListener('click', () => {
 
 uploadForm.addEventListener('keydown', (evt) => {
   if (evt.key === 'Escape') {
-    evt.stopPropagation();
+    //
   }
 });
 
@@ -168,7 +186,6 @@ uploadForm.addEventListener('submit', (evt) => {
 
   if (isValid) {
     submitButton.disabled = true;
-
     const formData = new FormData(uploadForm);
 
     sendData(formData)
@@ -177,6 +194,11 @@ uploadForm.addEventListener('submit', (evt) => {
 
         const successTemplate = document.querySelector('#success').content.cloneNode(true);
         const successElement = successTemplate.firstElementChild;
+        successElement.style.position = 'fixed';
+        successElement.style.zIndex = '9999';
+        successElement.style.top = '0';
+        successElement.style.left = '0';
+        successElement.style.width = '100%';
         document.body.appendChild(successElement);
 
         successElement.querySelector('.success__button').addEventListener('click', onSuccessClose);
@@ -186,6 +208,11 @@ uploadForm.addEventListener('submit', (evt) => {
       .catch(() => {
         const errorTemplate = document.querySelector('#error').content.cloneNode(true);
         const errorElement = errorTemplate.firstElementChild;
+        errorElement.style.position = 'fixed';
+        errorElement.style.zIndex = '9999';
+        errorElement.style.top = '0';
+        errorElement.style.left = '0';
+        errorElement.style.width = '100%';
         document.body.appendChild(errorElement);
 
         errorElement.querySelector('.error__button').addEventListener('click', onErrorClose);

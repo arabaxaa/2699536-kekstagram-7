@@ -33,7 +33,10 @@ const createCommentElement = (comment) => {
 };
 
 const updateCommentCounter = () => {
-  commentCountBlock.innerHTML = `${shownCommentsCount} из <span class="comments-count">${currentComments.length}</span> комментариев`;
+  commentCountBlock.innerHTML = `
+    <span class="social__comment-shown-count">${shownCommentsCount}</span> из
+    <span class="social__comment-total-count">${currentComments.length}</span> комментариев
+  `;
 };
 
 const renderCommentsPortion = () => {
